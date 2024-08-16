@@ -59,6 +59,10 @@ button:hover {
   border: 1px solid rgba(211, 211, 211, 0.4) !important;
 }
 
+.flip{
+  transform: rotate(180deg);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 80px);
@@ -79,7 +83,6 @@ button:hover {
   grid-column-start: 1;
   grid-column-end: 3;
   align-self: center;
-
   display: flex;
   align-items: center;
   gap: 20px;

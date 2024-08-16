@@ -1,5 +1,7 @@
 // const menu = document.querySelector(".menu");
 // const menuItems = menu.querySelector(".items");
+import Store from "./store.js";
+import View from "./view.js";
 
 const App = {
   $: {
@@ -135,4 +137,64 @@ const App = {
   },
 };
 
-window.addEventListener("load", App.init);
+const players = [
+  {
+    id: 1,
+    name: "Player 1",
+    iconClass: "fa-x",
+    colorClass: "turquoise",
+  },
+  {
+    id: 2,
+    name: "Player 2",
+    iconClass: "fa-o",
+    colorClass: "yellow",
+  },
+];
+
+console.log(players);
+
+function init() {
+  const view = new View();
+  const store = new Store(players);
+
+  // the browser automatically passes an Event object to the handler function
+  view.bindGameResetEvent((e) => {
+    view.closeAll();
+
+    store.reset();
+
+    view.clearMoves();
+
+    view.setTurnIndicator(store.game.currentPlayer);
+  });
+
+  view.bindNewRoundEvent((e) => {
+    console.log("new round event", e);
+  });
+
+  view.bindPlayerMoveEvent((square) => {
+    const existingMove = store.game.moves.find((move) => move.squareId === +square.id);
+
+    if (existingMove) {
+      return;
+    }
+
+    //place an icon of the current player in a square
+    view.handlePlayerMove(square, store.game.currentPlayer);
+
+    // advance to the next state by pushing a move to the moves array
+    store.playerMove(+square.id); //state change for store.game.currentPlayer
+
+    // check if someone won a game
+    if (store.game.status.isComplete) {
+      view.oppenModal(store.game.status.winner ? `${store.game.status.winner.name} wins` : "Tie!");
+      return;
+    }
+
+    // set the next players turn indicator
+    view.setTurnIndicator(store.game.currentPlayer);
+  });
+}
+
+window.addEventListener("load", init);
